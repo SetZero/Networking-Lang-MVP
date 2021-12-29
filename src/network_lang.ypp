@@ -1,0 +1,54 @@
+%{
+#include <iostream>
+
+extern int yylex(void);
+extern int yyparse();
+int yyerror(char* s);
+
+%}
+
+%token STRING NUM OTHER SEMICOLON PIC
+
+%type <name> STRING
+%type <number> NUM
+%type <name> PIC
+
+%union {
+    char name[20];
+    int number;
+}
+
+%%
+
+prog:
+    stmts
+;
+
+stmts:
+    | stmt SEMICOLON stmts
+
+stmt:
+    STRING {
+        printf("You entered a string - %s", $1);
+    }
+    | NUM {
+        printf("The number is %d", $1);
+    }
+    | OTHER
+;
+%%
+
+int yyerror(char* s) {
+    printf("Syntax error on line %s\n", s);
+    return 0;
+}
+
+int main() {
+    /*
+     * TODO:
+     * - Add real file parsing
+     * - Add LLVM support
+     */
+    yyparse();
+    return 0;
+}
